@@ -64,7 +64,6 @@ class LaserTaggerPredictor(object):
             example_list.append(example)
 
         out = self._predictor(input_info)
-        print("out['pred']", out['pred'])
         prediction_list = []
         for output, example in zip(out['pred'], example_list):
             predicted_ids = output.tolist()
@@ -79,21 +78,21 @@ class LaserTaggerPredictor(object):
             prediction_list.append(prediction)
         return prediction_list
 
-    # def predict(self, sources):  # TODO 这是逐个样本预测，没有ｂａｔｃｈ  应该好改
-    #   """Returns realized prediction for given sources."""
-    #   example = self._example_builder.build_bert_example(sources)
-    #   if example is None:
-    #     raise ValueError("Example couldn't be built.")
-    #
-    #   # Predict tag IDs.
-    #   keys = ['input_ids', 'input_mask', 'segment_ids']
-    #   out = self._predictor({key: [example.features[key]] for key in keys})
-    #   predicted_ids = out['pred'][0].tolist()
-    #   # Realize output.
-    #   example.features['labels'] = predicted_ids
-    #   # Mask out the begin and the end token.
-    #   example.features['labels_mask'] = [0] + [1] * (len(predicted_ids) - 2) + [0]
-    #   labels = [
-    #       self._id_2_tag[label_id] for label_id in example.get_token_labels()
-    #   ]
-    #   return example.editing_task.realize_output(labels)
+    def predict(self, sources):  # TODO 这是逐个样本预测，没有ｂａｔｃｈ  应该好改
+        """Returns realized prediction for given sources."""
+        example = self._example_builder.build_bert_example(sources)
+        if example is None:
+            raise ValueError("Example couldn't be built.")
+
+        # Predict tag IDs.
+        keys = ['input_ids', 'input_mask', 'segment_ids']
+        out = self._predictor({key: [example.features[key]] for key in keys})
+        predicted_ids = out['pred'][0].tolist()
+        # Realize output.
+        example.features['labels'] = predicted_ids
+        # Mask out the begin and the end token.
+        example.features['labels_mask'] = [0] + [1] * (len(predicted_ids) - 2) + [0]
+        labels = [
+            self._id_2_tag[label_id] for label_id in example.get_token_labels()
+        ]
+        return example.editing_task.realize_output(labels)

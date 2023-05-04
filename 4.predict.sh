@@ -20,7 +20,7 @@ TIMESTAMP=$(ls "${OUTPUT_DIR}/models/${EXPERIMENT}/" |
 # 保存的pb模型路径
 SAVED_MODEL_DIR=${OUTPUT_DIR}/models/${EXPERIMENT}/${TIMESTAMP}
 #输出路径
-PREDICTION_FILE=${OUTPUT_DIR}/models/pred.tsv
+PREDICTION_FILE=${OUTPUT_DIR}/models/pred.csv
 
 ${python} predict_main.py \
   --input_file=${WIKISPLIT_DIR}/test.txt \
